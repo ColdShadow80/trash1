@@ -1,14 +1,13 @@
-#!/system/bin
+#!/system/bin/sh
 
 # vmapper watchdog version
 vm_watchdog="1.0"
 
 [ -f /sdcard/vm_watchdog ] || exit
 
-
-RUN_EVERY=300
+RUN_EVERY=60
 REENABLE_EVERY=1
-REBOOT_AFTER=4
+REBOOT_AFTER=10
 
 check_mitm() {
 mitm_running=$(ps | grep -e de.goldjpg.vmapper -e de.vahrmap.vmapper -e com.mad.pogodroid | awk -F. '{ print $NF }')
