@@ -1,4 +1,4 @@
-#!/system/bin/sh
+#!/system/bin
 
 # vmapper watchdog version
 vm_watchdog="1.0"
