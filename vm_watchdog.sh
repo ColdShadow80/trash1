@@ -18,14 +18,14 @@ c=0
 while true; do
 check_mitm
 if (( $c > $REBOOT_AFTER )); then
-       reboot
+       echo "Tried to restart vmapper \$REBOOT_AFTER times and failed, rebooting device as failsafe."
+       #reboot
     elif [ -z "$mitm_running" ]; then
      echo "No MITM App found running, restarting VMapper"
-     am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true && am force-stop com.nianticlabs.pokemongo && am broadcast -n de.vahrmap.vmapper/.RestartService && monkey -p com.nianticlabs.pokemongo -c android.intent.category.LAUNCHER 1
+     # am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true
      sleep 10
      check_mitm
      [ -z "$mitm_running" ] && 	 c=$((c+1)) && echo "No MITM detected, waiting for next loop to retry." || echo "\$mitm_running restarted successfully, everything is fine" && c=0
-
  else
      c=0
      echo "\$mitm_running is running, everything is fine."
