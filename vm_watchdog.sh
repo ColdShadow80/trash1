@@ -34,14 +34,14 @@ if (( $i > $REBOOT_AFTER )); then
     fi
     echo "`date +%Y-%m-%d_%T` No MITM apk found running. Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."  >> $logfile
     echo "Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."
-    reboot
+    #reboot
   fi
     elif [ -z "$mitm_running" ]; then
-     echo "No MITM App found running by vm_watchdog, restarting VMapper" >> $logfile 
-     am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true
+     echo "`date +%Y-%m-%d_%T` No MITM App found running by vm_watchdog, restarting VMapper" >> $logfile 
+     #am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true
      sleep 10
      check_mitm
-     [ -z "$mitm_running" ] && i=$((i+1)) && echo "No MITM detected by vm_watchdog after trying to restart it, waiting for next loop to retry. This was try number $i " >> $logfile  || echo "\$mitm_running restarted successfully by vm_watchdog, everything is fine" >> $logfile && c=i
+     [ -z "$mitm_running" ] && i=$((i+1)) && echo "`date +%Y-%m-%d_%T` No MITM detected by vm_watchdog after trying to restart it, waiting for next loop to retry. This was try number $i " >> $logfile  || echo "`date +%Y-%m-%d_%T` \$mitm_running restarted successfully by vm_watchdog, everything is fine" >> $logfile && c=i
  else
      i=0
      echo "\$mitm_running is running, everything is fine."
