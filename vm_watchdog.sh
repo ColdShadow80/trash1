@@ -26,17 +26,16 @@ while true; do
 check_mitm
 if (( $i > $REBOOT_AFTER )); then
 
-  if [ $1 != "-nrc" ] ;then
     if [ $(cat $logfile | grep `date +%Y-%m-%d` | grep vm_watchdog | grep rebooted | wc -l) -gt 10 ] ;then
-    echo "`date +%Y-%m-%d_%T` Device rebooted over 10 times today by the vm_watchdog script, vmapper.sh signing out, see you tomorrow"  >> $logfile
-    echo "Device rebooted over 10 times today  by the vm_watchdog script, vm_watchdog signing out to prevent infinite loops, see you tomorrow.....add -nrc to job or (re)move /sdcard/vm.log then try again"
-    exit 1
+      echo "`date +%Y-%m-%d_%T` Device rebooted over 10 times today by the vm_watchdog script, vmapper.sh signing out, see you tomorrow"  >> $logfile
+      echo "Device rebooted over 10 times today  by the vm_watchdog script, vm_watchdog signing out to prevent infinite loops, see you tomorrow.....add -nrc to job or (re)move /sdcard/vm.log then try again"
+    else
+      echo "`date +%Y-%m-%d_%T` No MITM apk found running. Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."  >> $logfile
+      echo "Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."
+      #reboot
     fi
-    echo "`date +%Y-%m-%d_%T` No MITM apk found running. Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."  >> $logfile
-    echo "Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."
-    #reboot
-  fi
-    elif [ -z "$mitm_running" ]; then
+
+ elif [ -z "$mitm_running" ]; then
      echo "`date +%Y-%m-%d_%T` No MITM App found running by vm_watchdog, restarting VMapper" >> $logfile 
      #am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true
      sleep 10
