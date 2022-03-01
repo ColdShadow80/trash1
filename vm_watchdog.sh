@@ -3,7 +3,15 @@
 # vmapper watchdog version
 vm_watchdog="1.0"
 
-[ -f /sdcard/vm_watchdog ] || exit
+#Check if vmapper watchdog script is disabled
+[ ! -f /sdcard/vm_watchdog ] || exit
+
+#Create logfile if it doesn't exist yet
+logfile="/sdcard/vm.log"
+
+if [ ! -e $logfile ] ;then
+    touch $logfile
+fi
 
 RUN_EVERY=60
 REENABLE_EVERY=1
@@ -13,21 +21,30 @@ check_mitm() {
 mitm_running=$(ps | grep -e de.goldjpg.vmapper -e de.vahrmap.vmapper -e com.mad.pogodroid | awk -F. '{ print $NF }')
 }
 
-c=0
+i=0
 
 while true; do
 check_mitm
-if (( $c > $REBOOT_AFTER )); then
-       echo "Tried to restart vmapper \$REBOOT_AFTER times and failed, rebooting device as failsafe."
-       #reboot
+if (( $i > $REBOOT_AFTER )); then
+
+  if [ $1 != "-nrc" ] ;then
+    if [ $(cat $logfile | grep `date +%Y-%m-%d` | grep vm_watchdog | grep rebooted | wc -l) -gt 10 ] ;then
+    echo "`date +%Y-%m-%d_%T` Device rebooted over 10 times today by the vm_watchdog script, vmapper.sh signing out, see you tomorrow"  >> $logfile
+    echo "Device rebooted over 10 times today  by the vm_watchdog script, vm_watchdog signing out to prevent infinite loops, see you tomorrow.....add -nrc to job or (re)move /sdcard/vm.log then try again"
+    exit 1
+    fi
+    echo "`date +%Y-%m-%d_%T` No MITM apk found running. Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."  >> $logfile
+    echo "Tried to restart vmapper \$REBOOT_AFTER times and failed, vm_watchdog rebooting device as failsafe."
+    reboot
+  fi
     elif [ -z "$mitm_running" ]; then
-     echo "No MITM App found running, restarting VMapper"
-     # am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true
+     echo "No MITM App found running by vm_watchdog, restarting VMapper" >> $logfile 
+     am broadcast -n de.vahrmap.vmapper/.RestartService --ez autostart true
      sleep 10
      check_mitm
-     [ -z "$mitm_running" ] && 	 c=$((c+1)) && echo "No MITM detected, waiting for next loop to retry." || echo "\$mitm_running restarted successfully, everything is fine" && c=0
+     [ -z "$mitm_running" ] && i=$((i+1)) && echo "No MITM detected by vm_watchdog after trying to restart it, waiting for next loop to retry. This was try number $i " >> $logfile  || echo "\$mitm_running restarted successfully by vm_watchdog, everything is fine" >> $logfile && c=i
  else
-     c=0
+     i=0
      echo "\$mitm_running is running, everything is fine."
 fi
   sleep $RUN_EVERY
