@@ -14,7 +14,6 @@ if [ ! -e $logfile ] ;then
 fi
 
 RUN_EVERY=60
-REENABLE_EVERY=1
 REBOOT_AFTER=10
 
 check_mitm() {
