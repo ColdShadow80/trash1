@@ -44,7 +44,7 @@ if (( $i > $REBOOT_AFTER )); then
      [ -z "$mitm_running" ] && i=$((i+1)) && echo "`date +%Y-%m-%d_%T` No MITM detected by vm_watchdog after trying to restart it, waiting for next loop to retry. This was try number $i " >> $logfile && echo "`date +%Y-%m-%d_%T` No MITM detected by vm_watchdog after trying to restart it, waiting for next loop to retry. This was try number $i "  || echo "`date +%Y-%m-%d_%T` \$mitm_running restarted successfully by vm_watchdog, everything is fine" >> $logfile && c=i
  else
      i=0
-     echo "\$mitm_running is running, everything is fine."
+     echo "`date +%Y-%m-%d_%T` vm_watchdog is running, PID of this script: $$ " >> $logfile
 fi
   sleep $RUN_EVERY
 done
